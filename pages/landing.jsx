@@ -35,7 +35,7 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto">
           <Avatar className="w-32 h-32 mx-auto border-4 border-black shadow-md overflow-hidden rounded-full mb-6">
             <AvatarImage
-              src="/antpp.jpg"
+              src="/antpp.JPG"
               alt="Anthony"
               className="w-full h-full object-cover object-[center_30%]"
             />
