@@ -2,8 +2,8 @@
 const send = require('gmail-send')({
     user: 'doan.notifier@gmail.com', // email address to send messages
     pass: 'jolnxvmaiqmmixdk', //application password for this email
-    to: 'antdoan123@gmail.com', //change this to whatever email messages should be sending to
-    subject: `EeesshhMedia - Message from Customer`,
+    to: 'antdoan1999@gmail.com', //change this to whatever email messages should be sending to
+    subject: `Connect - Message from Customer`,
   });
 
 export default async function handler(req, res) {

@@ -4,10 +4,7 @@ import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 import { animated, useSpring } from 'react-spring';
 import Link from 'next/link'
-import Features from './components/Features'
-import Hero from './components/Hero'
-import Contact from './components/Contact'
-import Services from './components/Services';
+import Landing from './landing';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -29,20 +26,13 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Eeesshh Media</title>
+        <title>Opitmal Gym</title>
         <meta name="description" content="Your next leading social media resources" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className='flex flex-col justify-center items-center text-black w-full max-w-7xl mx-auto'>
-
-      
-        {/* Features */}
-        <Features></Features>
-        <Services></Services>
-        <Contact></Contact>
-        {/* Features */}
-      
+      <main className='flex flex-col justify-center items-center bg-white w-full mx-auto'>
+        <Landing/>
       </main>
     </>
   )
