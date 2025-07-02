@@ -8,19 +8,19 @@ const websites = [
     name: "Bartending Service Website",
     description: "Professional event bartending services in SoCal.",
     url: "https://www.mysocalbartenders.com/",
-    image: "/screenshots/bartending.jpg",
+    image: "barss.png",
   },
   {
     name: "Tattoo Shop Website",
     description: "Clean and artistic online presence for a tattoo studio.",
     url: "https://www.whitelotusociety.com/",
-    image: "/screenshots/tattoo.jpg",
+    image: "tattooss.png",
   },
   {
     name: "Window & Door Company Website",
     description: "Corporate-style site for a premium window and door company.",
     url: "https://www.innoview.us/index.html",
-    image: "/screenshots/windows.jpg",
+    image: "doorss.png",
   },
 ];
 

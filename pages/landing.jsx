@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Instagram, Linkedin, Mail, Play, Briefcase, Monitor, ShoppingBag, Martini, ExternalLink, Code, MessageCircle } from "lucide-react";
+import { Instagram, Linkedin, Mail, Play, ChefHat, Monitor, ShoppingBag, Martini, ExternalLink, Code, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -110,9 +110,9 @@ export default function HomePage() {
               gradient: "from-blue-400 to-blue-600",
               link: "/website",
             }, {
-              title: "Amazon Storefront",
-              description: "Check out my curated product recommendations",
-              icon: ShoppingBag,
+              title: "Mangon Dining Menu",
+              description: "Check out Vietnamese-Fusion Catering and private chef",
+              icon: ChefHat,
               gradient: "from-orange-400 to-orange-600",
               link: "#",
             }, {
