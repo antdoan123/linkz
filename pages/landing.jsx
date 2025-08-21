@@ -114,7 +114,7 @@ export default function HomePage() {
               description: "Check out Vietnamese-Fusion Catering and private chef",
               icon: ChefHat,
               gradient: "from-orange-400 to-orange-600",
-              link: "#",
+              link: "/menu",
             }, {
               title: "Mobile Bartending",
               description: "Professional cocktail service for your events and a fun drinking card game to play",
