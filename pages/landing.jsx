@@ -27,6 +27,33 @@ const projectLinks = [
   },
 ];
 
+const socials = [
+  {
+    name: "Instagram",
+    icon: Instagram,
+    url: "https://www.instagram.com/antdoan/",
+    color: "hover:bg-pink-500",
+  },
+  {
+    name: "TikTok",
+    icon: Play,
+    url: "https://www.tiktok.com/@itsantdoan",
+    color: "hover:bg-black",
+  },
+  {
+    name: "LinkedIn",
+    icon: Linkedin,
+    url: "https://www.linkedin.com/in/antdoan/",
+    color: "hover:bg-blue-700",
+  },
+  {
+    name: "Email",
+    icon: Mail,
+    url: "mailto:antdoan1999@gmail.com",
+    color: "hover:bg-yellow-400",
+  },
+]
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white text-black font-sans">
@@ -46,8 +73,7 @@ export default function HomePage() {
             Web Developer & Visual Creative
           </p>
           <p className="text-lg text-gray-700 mt-6 max-w-xl mx-auto">
-            Computer Engineering graduate turned creative—sharing my lifestyle, building sleek websites, and expressing myself through fashion.
-          </p>
+            Computer engineering graduate turned creative—building clean websites, growing brands, and sharing my journey through lifestyle, fitness, and fashion.          </p>
           <div className="mt-8">
             <Link href="/contact">
               <Button className="uppercase bg-black text-white hover:bg-neutral-800 px-8 py-3 tracking-wider rounded-none">
@@ -62,39 +88,29 @@ export default function HomePage() {
       <section className="bg-white py-16">
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-3xl font-serif mb-8 text-center">Follow My Journey</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[{
-              name: "Instagram",
-              icon: Instagram,
-              url: "https://www.instagram.com/antdoan/",
-              color: "hover:bg-pink-500",
-            }, {
-              name: "TikTok",
-              icon: Play,
-              url: "https://www.tiktok.com/@antdoan123",
-              color: "hover:bg-black",
-            }, {
-              name: "LinkedIn",
-              icon: Linkedin,
-              url: "https://www.linkedin.com/in/antdoan/",
-              color: "hover:bg-blue-700",
-            }, {
-              name: "Email",
-              icon: Mail,
-              url: "mailto:antdoan1999@gmail.com",
-              color: "hover:bg-yellow-400",
-            }].map((social) => (
-              <Link key={social.name} href={social.url}>
-                <Button
-                  variant="outline"
-                  className={`w-full justify-start gap-3 h-14 transition-all duration-200 ${social.color} hover:text-white border-gray-200 rounded-none font-medium`}
-                >
-                  <social.icon className="w-5 h-5" />
-                  {social.name}
-                </Button>
-              </Link>
-            ))}
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {socials.map((social) => (
+        <Link 
+          key={social.name} 
+          href={social.url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          <Button
+            variant="outline"
+            className={`
+              w-full h-14 justify-start gap-3 rounded-none border-gray-200 
+              transition-all duration-200 font-medium
+              hover:text-white ${social.color} hover:scale-[1.02]
+            `}
+          >
+            <social.icon className="w-5 h-5" />
+            {social.name}
+          </Button>
+        </Link>
+      ))}
+    </div>
+  
         </div>
       </section>
 

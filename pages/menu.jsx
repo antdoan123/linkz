@@ -8,8 +8,8 @@ const menuCategories = [
   {
     category: "Appetizers",
     items: [
-      { name: "Vietnamese Fresh Spring Rolls", description: "Shrimp, pork, vermicelli, fresh herbs, peanut sauce" },
-      { name: "Garlic Butter Shrimp Skewers", description: "Grilled shrimp glazed with garlic butter and fresh herbs" },
+      { name: "Carmalized Pork Belly Crispy Rice", description: "Braised pork belly, sushi rice, gochujang aioli" },
+      { name: "Crying Tiger Steak Salad", description: "Soy-marinated ribeye, watercress, cucumber, fuji apple, fish sauce dressing" },
     ],
   },
   {
