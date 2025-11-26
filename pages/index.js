@@ -26,10 +26,10 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Opitmal Gym</title>
+        <title>Anthony Doan - Web Designer | Content Creator</title>
         <meta name="description" content="Your next leading social media resources" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.png" />
       </Head>
       <main className='flex flex-col justify-center items-center bg-white w-full mx-auto'>
         <Landing/>
