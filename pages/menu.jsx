@@ -79,7 +79,23 @@ export default function Menu() {
         </div>
       </div>
     ))}
+    <div className="flex flex-col md:flex-row gap-8">
+          <img
+          src="food1.jpg"
+          className="clip h-96 w-96 border bg-black object-cover"
+        ></img>
+          <img
+          src="food2.jpg"
+          className="clip h-96 w-96 border bg-black object-cover"
+        ></img>
+        <img
+          src="food3.jpg"
+          className="clip h-96 w-96 border bg-black object-cover"
+        ></img>
+      </div>
+
   </div>
+
 </section>
 
 

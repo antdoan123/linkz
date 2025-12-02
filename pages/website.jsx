@@ -22,6 +22,12 @@ const websites = [
     url: "https://www.innoview.us/index.html",
     image: "doorss.png",
   },
+    {
+    name: "Fitness Gym and Sport Center Website",
+    description: "Athletic style gym with old school free-weights.",
+    url: "https://www.vinelandoptimalgym.com/",
+    image: "gymss.png",
+  },
 ];
 
 export default function WebsiteExamples() {
@@ -41,7 +47,7 @@ export default function WebsiteExamples() {
             Website Examples
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            A look at some of the websites I’ve built—from creative studios to service businesses.
+            A look at some of the websites I&apos;ve built—from creative studios to service businesses.
           </p>
         </div>
 
