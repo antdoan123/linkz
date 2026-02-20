@@ -10,8 +10,8 @@ export default function InvitePage() {
   // EDIT THESE
   const event = {
     title: "Anthony’s Circle",
-    subtitle: "Networking / Appreciation Night",
-    dateText: "Friday, January 16",
+    subtitle: "Appreciation Night",
+    dateText: "Friday, March 6",
     timeText: "6:00 PM",
     locationName: "Stanton, CA",
     addressLine: "Cloud House Apartment",
@@ -22,7 +22,7 @@ export default function InvitePage() {
   }
 
   const menu = {
-    header: "Food Menu",
+    header: "Food Menu *subject to change",
     sections: [
       {
         title: "Small Bites",
@@ -64,7 +64,7 @@ export default function InvitePage() {
         <title>{event.title} | Invitation</title>
         <meta
           name="description"
-          content="Invitation to a networking / appreciation night hosted by Anthony. RSVP for date, time, location, and menu details."
+          content="Invitation to a appreciation night hosted by Anthony. RSVP for date, time, location, and menu details."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -179,7 +179,7 @@ export default function InvitePage() {
                   <div>
                     <p className="font-semibold">RSVP</p>
                     <p className="text-gray-600">
-                      Please RSVP so I can plan food + seating.
+                      Please RSVP so I can plan food + parking.
                     </p>
                   </div>
                 </div>
