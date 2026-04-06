@@ -179,7 +179,7 @@ export default function HomePage() {
       <section className="bg-neutral-50 py-16 md:py-24 border-y border-gray-100">
         <div className="max-w-5xl mx-auto px-8">
           <h2 className="text-2xl md:text-3xl font-serif mb-2 text-center">Featured Projects</h2>
-          <p className="text-sm text-gray-400 text-center mb-12 tracking-wide">A few things I've built</p>
+          <p className="text-sm text-gray-400 text-center mb-12 tracking-wide">A few things I&apos;ve built</p>
           <div className="grid md:grid-cols-3 gap-6">
             {projectLinks.map((project, index) => (
               <Link key={index} href={project.url} className="block group">
