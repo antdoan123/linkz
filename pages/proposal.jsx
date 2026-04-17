@@ -40,7 +40,7 @@ export default function MangonDiningProposal() {
             <p className="text-sm font-light leading-relaxed text-[#B0A898]">
               Your restaurant becomes the home of an intimate pop-up dining experience.
               Curated small bites, handcrafted drinks, and live RnB music — bringing
-              40 to 60 guests through your doors on hours you'd otherwise be closed.
+              40 to 60 guests through your doors on hours you&apos;d otherwise be closed.
             </p>
           </div>
           <div className="flex flex-col gap-4 justify-center">
@@ -125,7 +125,7 @@ export default function MangonDiningProposal() {
           </div>
           <div className="h-px bg-[#C9A84C]/15 mb-6" />
           <p className="font-serif text-center text-[15px] italic text-[#6B6B6B]">
-            "Money made on hours your restaurant would otherwise be closed"
+            &quot;Money made on hours your restaurant would otherwise be closed&quot;
           </p>
         </section>
 
@@ -159,7 +159,7 @@ export default function MangonDiningProposal() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-10 bg-gradient-to-b from-[#C9A84C] to-transparent" />
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-10 bg-gradient-to-t from-[#C9A84C] to-transparent" />
           <h2 className="font-serif text-5xl font-light mb-5 leading-snug">
-            Let's start with <em className="not-italic text-[#E8C97A]">one day</em>
+            Let&apos;s start with <em className="not-italic text-[#E8C97A]">one day</em>
           </h2>
           <p className="text-sm font-light leading-relaxed text-[#9A9390] max-w-md mx-auto mb-8">
             No long-term commitment required. One trial event — you see the concept come to life,
