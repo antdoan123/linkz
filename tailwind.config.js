@@ -17,11 +17,19 @@ module.exports = {
           blue: '#0077b6',
           pink: '#ff6f91',
         },
+                gold: {
+          DEFAULT: '#C9A84C',
+          light: '#E8C97A',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'], // Default modern stack
+                serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+        sans:  ['DM Sans', 'sans-serif'],
       },
     },
   },
   plugins: [],
 }
+
+
