@@ -1,66 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Head from "next/head";
 
-const VENMO = "@YOUR_VENMO";
-const ZELLE = "YOUR_EMAIL@gmail.com";
+const VENMO_QR     = "/images/venmo-qr.png";
+const ZELLE_QR     = "/images/zelle-qr.png";
+const POSTER_IMG   = "/images/poster.png";
+const VENMO_HANDLE = "@YOUR_VENMO";
+const ZELLE_EMAIL  = "YOUR_EMAIL@gmail.com";
 
-const PRICES    = { 1: 45,  2: 90,  3: 123, 4: 160 };
-const ORIGINALS = { 1: 45,  2: 90,  3: 135, 4: 180 };
-const SAVINGS   = { 1: 0,   2: 0,   3: 12,  4: 20  };
+const PRICES  = { 1: 45, 2: 90, 3: 123, 4: 160 };
+const SAVINGS = { 1: 0,  2: 0,  3: 12,  4: 20  };
+const ORIGINALS = { 1: 45, 2: 90, 3: 135, 4: 180 };
 
 const bites = [
-  { name: "Asian Compound Butter Scallop",  note: "1 per guest" },
-  { name: "Mango Habanero Salmon Crudo",    note: "1 per guest" },
-  { name: "Spicy Soy Devil Eggs",           note: null },
-  { name: "Spicy Buffalo Wonton",           note: null },
-  { name: "Vietnamese Braised Pork Belly",  note: null },
-  { name: "Crying Tiger Beef Skewer",       note: null },
-  { name: "Coconut Pandan Jelly",           note: "Dessert" },
+  { name: "Asian Butter Scallops",        note: "1 per guest" },
+  { name: "Mango Habanero Salmon",         note: "1 per guest" },
+  { name: "Spicy Soy Devil Eggs",          note: null },
+  { name: "Vietnamese Braised Pork Belly", note: null },
+  { name: "Spicy Buffalo Chicken Wonton",          note: null },
+  { name: "Crying Tiger Beef Skewer",      note: null },
+  { name: "Coconut Pandan Jelly",          note: "Dessert" },
 ];
 
-const details = [
-  ["Date",      "Friday, June 6"],
-  ["Doors",     "9:00 PM"],
-  ["Last call", "1:00 AM"],
-  ["Where",     "Santa Ana, CA"],
-  ["Music",     "DJ Sleezy"],
-  ["Dress",     "Your best fit"],
-  ["Alcohol",   "BYOB — not sold on site"],
-];
-
-// ── colour tokens ──────────────────────────────────────────────
-const C = {
-  bg:       "#0b0a08",
-  bgCard:   "rgba(255,255,255,0.012)",
-  bgForm:   "rgba(255,255,255,0.008)",
-  border:   "rgba(255,255,255,0.06)",
-  accent:   "rgba(107,143,212,0.45)",
-  accentSolid: "#6b8fd4",
-  cream:    "#eae4d8",
-  muted:    "rgba(235,228,216,0.38)",
-  mutedMd:  "rgba(235,228,216,0.68)",
-  faint:    "rgba(255,255,255,0.15)",
-  label:    "rgba(255,255,255,0.22)",
-};
-
-// ── reusable style objects ──────────────────────────────────────
-const S = {
-  rule: { width: "100%", height: 1, background: `linear-gradient(to right, transparent, ${C.accent}, transparent)` },
-  ornLine: { flex: 1, height: 1, background: C.border },
-  ornDot:  { width: 3, height: 3, borderRadius: "50%", background: C.accent, flexShrink: 0 },
-  ornDiamond: { width: 5, height: 5, border: `1px solid ${C.accent}`, transform: "rotate(45deg)", flexShrink: 0 },
-};
-
-function Orn() {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-      <div style={S.ornLine} /><div style={S.ornDot} /><div style={S.ornDiamond} /><div style={S.ornDot} /><div style={S.ornLine} />
-    </div>
-  );
-}
+const tickerItems = ["SIP", "BITES", "BEATS", "JUNE 05", "9PM", "SANTA ANA", "60 SEATS", "MANGON DINING"];
 
 export default function Menu() {
   const [sent,      setSent]      = useState(false);
@@ -68,6 +32,7 @@ export default function Menu() {
   const [payMethod, setPayMethod] = useState("");
   const [heard,     setHeard]     = useState("");
   const [qty,       setQty]       = useState(1);
+  const [tick,      setTick]      = useState(0);
 
   const nameRef  = useRef();
   const igRef    = useRef();
@@ -75,9 +40,17 @@ export default function Menu() {
   const dietRef  = useRef();
   const notesRef = useRef();
 
-  const total    = PRICES[qty];
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 40);
+    return () => clearInterval(id);
+  }, []);
+
+  const total   = PRICES[qty];
+  const savings = SAVINGS[qty];
   const original = ORIGINALS[qty];
-  const savings  = SAVINGS[qty];
+
+  const repeated = [...tickerItems, ...tickerItems, ...tickerItems];
+  const offset   = (tick * 0.4) % (tickerItems.length * 120);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -87,38 +60,43 @@ export default function Menu() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          subject: "Mangon Dining Registration — " + nameRef.current.value,
+          subject: "Mangon Dining RSVP — " + nameRef.current.value,
           text: [
-            "Name: "         + nameRef.current.value,
-            "Instagram: "    + igRef.current.value,
-            "Phone: "        + phoneRef.current.value,
-            "Tickets: "      + qty + " — $" + total + (savings ? " (saved $" + savings + ")" : ""),
-            "Payment: "      + payMethod,
-            "How heard: "    + heard,
-            "Dietary: "      + (dietRef.current.value  || "None"),
-            "Notes: "        + (notesRef.current.value || "None"),
+            "Name: "      + nameRef.current.value,
+            "Instagram: " + igRef.current.value,
+            "Phone: "     + phoneRef.current.value,
+            "Tickets: "   + qty + " x $45 = $" + total + (savings ? " (saved $" + savings + ")" : ""),
+            "Payment: "   + payMethod,
+            "Heard: "     + heard,
+            "Dietary: "   + (dietRef.current.value  || "None"),
+            "Notes: "     + (notesRef.current.value || "None"),
           ].join("\n"),
         }),
       });
       setSent(true);
-    } catch {
-      console.error("send failed");
-    } finally {
-      setLoading(false);
-    }
+    } catch { console.error("failed"); }
+    finally { setLoading(false); }
   };
 
-  // ── shared input style ────────────────────────────────────────
+  const C = {
+    navy: "#0d1229",
+    cream: "#e8e4d8",
+    creamD: "rgba(232,228,216,0.5)",
+    creamF: "rgba(232,228,216,0.25)",
+    border: "rgba(232,228,216,0.1)",
+    borderF: "rgba(232,228,216,0.07)",
+  };
+
   const inputSt = {
-    width: "100%",
-    background: "rgba(255,255,255,0.035)",
-    border: "1px solid rgba(255,255,255,0.09)",
-    borderRadius: 14,
-    padding: "13px 16px",
-    fontSize: 13,
-    color: C.cream,
-    fontFamily: "'DM Sans', sans-serif",
-    outline: "none",
+    width: "100%", background: "rgba(232,228,216,0.04)",
+    border: "1px solid rgba(232,228,216,0.1)",
+    padding: "12px 14px", fontSize: 13, color: C.cream,
+    fontFamily: "inherit", outline: "none", letterSpacing: 0.3,
+  };
+
+  const labelSt = {
+    display: "block", fontSize: 8, letterSpacing: 3,
+    textTransform: "uppercase", color: C.creamF, marginBottom: 6,
   };
 
   return (
@@ -126,305 +104,359 @@ export default function Menu() {
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
 
-      <div style={{ background: C.bg, minHeight: "100vh", fontFamily: "'DM Sans', sans-serif", overflowX: "hidden", position: "relative" }}>
+      <div style={{ background: C.navy, minHeight: "100vh", fontFamily: "'DM Sans', sans-serif", color: C.cream, overflowX: "hidden", position: "relative" }}>
+        <style>{`
+          /* ── keyframes ── */
+          @keyframes fadeSlideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+          @keyframes fadeIn      { from { opacity:0; } to { opacity:1; } }
+          @keyframes pulse       { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+          @keyframes wispRise    { 0%{transform:translateY(0) scaleX(1);opacity:1;} 55%{transform:translateY(-50px) translateX(5px) scaleX(1.4);opacity:0.4;} 100%{transform:translateY(-100px) scaleX(0.8);opacity:0;} }
+          @keyframes wispRise2   { 0%{transform:translateY(0) scaleX(1);opacity:0.8;} 50%{transform:translateY(-60px) translateX(-4px) scaleX(1.3);opacity:0.3;} 100%{transform:translateY(-120px) scaleX(0.7);opacity:0;} }
+          @keyframes wispRise3   { 0%{transform:translateY(0) scaleX(1);opacity:0.6;} 60%{transform:translateY(-40px) scaleX(1.2);opacity:0.25;} 100%{transform:translateY(-85px) scaleX(0.85);opacity:0;} }
 
-        {/* ── grain overlay ── */}
-        <div style={{
-          position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", opacity: 0.055,
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "repeat",
-        }} />
+          /* ── animation classes ── */
+          .h1  { animation: fadeSlideUp 0.9s ease both; }
+          .h2  { animation: fadeSlideUp 0.9s ease 0.12s both; }
+          .h3  { animation: fadeSlideUp 0.9s ease 0.24s both; }
+          .h4  { animation: fadeSlideUp 0.9s ease 0.36s both; }
+          .h5  { animation: fadeSlideUp 0.9s ease 0.48s both; }
+          .tw  { animation: fadeIn       0.6s ease 0.6s  both; }
 
-        {/* ── ambient orbs ── */}
-        <div style={{ position: "fixed", width: 900, height: 900, top: -350, left: -300, borderRadius: "50%", background: "radial-gradient(circle, rgba(107,143,212,0.07) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0 }} />
-        <div style={{ position: "fixed", width: 700, height: 700, bottom: -250, right: -200, borderRadius: "50%", background: "radial-gradient(circle, rgba(160,120,75,0.05) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0 }} />
+          .wisp { transform-origin: bottom center; }
+          .w1 { animation: wispRise  8s  ease-in infinite; }
+          .w2 { animation: wispRise2 11s ease-in infinite 2s; }
+          .w3 { animation: wispRise3 7s  ease-in infinite 4s; }
+          .w4 { animation: wispRise  9s  ease-in infinite 1s; }
+          .w5 { animation: wispRise2 12s ease-in infinite 3s; }
+          .w6 { animation: wispRise3 14s ease-in infinite 5s; }
+          .w7 { animation: wispRise  10s ease-in infinite 2s; }
+          .w8 { animation: wispRise2 8s  ease-in infinite 6s; }
 
-        {/* ── floating shapes ── */}
-        <div style={{ position: "absolute", top: 90, right: "5%", width: 110, height: 110, borderRadius: "50%", border: "1px solid rgba(107,143,212,0.07)", pointerEvents: "none", zIndex: 0 }} />
-        <div style={{ position: "absolute", top: 220, left: "3%", width: 55, height: 55, border: "1px solid rgba(107,143,212,0.07)", transform: "rotate(45deg)", pointerEvents: "none", zIndex: 0 }} />
-        <div style={{ position: "absolute", top: 480, right: "9%", width: 28, height: 28, borderRadius: "50%", background: "rgba(107,143,212,0.05)", pointerEvents: "none", zIndex: 0 }} />
+          /* ── live dot ── */
+          .dot { width:6px; height:6px; border-radius:50%; background:#e8e4d8; animation:pulse 1.5s infinite; display:inline-block; }
 
-        {/* ── back link ── */}
-        <Link href="/" style={{ position: "fixed", top: 20, left: 22, zIndex: 300, fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.18)", textDecoration: "none" }}>
+          /* ── pill buttons ── */
+          .pill {
+            padding:8px 14px; border:1px solid rgba(232,228,216,0.15);
+            background:transparent; color:rgba(232,228,216,0.45);
+            font-size:10px; letter-spacing:2px; text-transform:uppercase;
+            cursor:pointer; transition:all 0.18s; font-family:inherit;
+          }
+          .pill:hover,.pill.on { border-color:rgba(232,228,216,0.5); color:#e8e4d8; background:rgba(232,228,216,0.05); }
+
+          /* ── stepper buttons ── */
+          .sb {
+            background:rgba(232,228,216,0.04); border:none;
+            font-size:18px; width:44px; height:44px;
+            cursor:pointer; font-family:inherit; flex-shrink:0; transition:0.15s;
+            color:rgba(232,228,216,0.6);
+          }
+          .sb:hover:not(:disabled) { background:rgba(232,228,216,0.1); }
+          .sb:disabled { opacity:0.18; cursor:not-allowed; }
+
+          /* ── main CTA ── */
+          .cta {
+            width:100%; padding:15px; border:none; cursor:pointer;
+            font-family:inherit; font-size:10px; letter-spacing:5px;
+            text-transform:uppercase; font-weight:500; transition:all 0.2s;
+          }
+          .cta:not(:disabled) { background:#e8e4d8; color:#0d1229; }
+          .cta:not(:disabled):hover { background:#fff; transform:translateY(-1px); box-shadow:0 8px 28px rgba(232,228,216,0.12); }
+          .cta:disabled { background:rgba(232,228,216,0.1); color:rgba(232,228,216,0.2); cursor:not-allowed; }
+
+          /* ── QR card ── */
+          .qrc { border:1px solid rgba(232,228,216,0.1); padding:18px 14px; text-align:center; transition:all 0.2s; cursor:pointer; }
+          .qrc:hover,.qrc.on { border-color:rgba(232,228,216,0.4); background:rgba(232,228,216,0.03); }
+
+          /* ── inputs ── */
+          input,textarea { background:rgba(232,228,216,0.04); border:1px solid rgba(232,228,216,0.1); padding:12px 14px; font-size:13px; color:#e8e4d8; font-family:inherit; outline:none; width:100%; transition:border-color 0.2s; letter-spacing:0.3px; }
+          input:focus,textarea:focus { border-color:rgba(232,228,216,0.35); }
+          input::placeholder,textarea::placeholder { color:rgba(232,228,216,0.18); }
+          textarea { resize:vertical; min-height:68px; }
+
+          /* ── layout responsive ── */
+          .hero-cols  { display:flex; gap:40px; align-items:flex-start; }
+          .hero-poster-wrap { width:300px; flex-shrink:0; position:sticky; top:24px; }
+          .two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+          .meta-row { display:flex; gap:24px; flex-wrap:wrap; }
+
+          @media (max-width: 820px) {
+            .hero-cols { flex-direction:column-reverse !important; }
+            .hero-poster-wrap { width:100% !important; position:static !important; }
+            .hero-poster-wrap img { max-height:320px; object-fit:cover; object-position:top; }
+          }
+          @media (max-width: 540px) {
+            .two-col { grid-template-columns:1fr !important; }
+          }
+        `}</style>
+
+        {/* ── grain ── */}
+        <div style={{ position:"fixed", inset:0, zIndex:0, pointerEvents:"none", opacity:0.045,
+          backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          backgroundRepeat:"repeat" }} />
+
+        {/* ── wisps ── */}
+        <div style={{ position:"fixed", inset:0, zIndex:0, pointerEvents:"none", overflow:"hidden" }}>
+          <div className="wisp w1" style={{ position:"absolute", top:"8%",  left:"7%",   width:3, height:180, background:"linear-gradient(to top, rgba(232,228,216,0.18), rgba(232,228,216,0.05), transparent)", borderRadius:"50%", filter:"blur(6px)" }} />
+          <div className="wisp w2" style={{ position:"absolute", top:"5%",  left:"10%",  width:2, height:220, background:"linear-gradient(to top, rgba(232,228,216,0.12), transparent)",                                borderRadius:"50%", filter:"blur(9px)" }} />
+          <div className="wisp w3" style={{ position:"absolute", top:"9%",  left:"5%",   width:4, height:150, background:"linear-gradient(to top, rgba(232,228,216,0.09), transparent)",                                borderRadius:"50%", filter:"blur(5px)" }} />
+          <div className="wisp w4" style={{ position:"absolute", top:"3%",  right:"11%", width:2, height:200, background:"linear-gradient(to top, rgba(232,228,216,0.14), transparent)",                                borderRadius:"50%", filter:"blur(7px)" }} />
+          <div className="wisp w5" style={{ position:"absolute", top:"6%",  right:"9%",  width:3, height:160, background:"linear-gradient(to top, rgba(232,228,216,0.09), transparent)",                                borderRadius:"50%", filter:"blur(10px)" }} />
+          <div className="wisp w6" style={{ position:"absolute", top:"48%", left:"4%",   width:2, height:130, background:"linear-gradient(to top, rgba(232,228,216,0.07), transparent)",                                borderRadius:"50%", filter:"blur(6px)" }} />
+          <div className="wisp w7" style={{ position:"absolute", top:"52%", right:"6%",  width:2, height:110, background:"linear-gradient(to top, rgba(232,228,216,0.06), transparent)",                                borderRadius:"50%", filter:"blur(5px)" }} />
+          <div className="wisp w8" style={{ position:"absolute", top:"55%", right:"8%",  width:3, height:90,  background:"linear-gradient(to top, rgba(232,228,216,0.05), transparent)",                                borderRadius:"50%", filter:"blur(8px)" }} />
+          <div style={{ position:"absolute", top:0, left:0, right:0, height:"45%", background:"radial-gradient(ellipse 55% 35% at 15% 0%, rgba(180,190,230,0.04) 0%, transparent 100%)", pointerEvents:"none" }} />
+          <div style={{ position:"absolute", top:0, left:0, right:0, height:"40%", background:"radial-gradient(ellipse 45% 30% at 85% 0%, rgba(180,190,230,0.03) 0%, transparent 100%)", pointerEvents:"none" }} />
+        </div>
+
+        {/* back */}
+        <Link href="/" style={{ position:"fixed", top:18, left:20, zIndex:300, fontSize:9, letterSpacing:3, textTransform:"uppercase", color:"rgba(232,228,216,0.22)", textDecoration:"none" }}>
           &#8592; Home
         </Link>
 
-        {/* ════════════════════════════════════════
-            PAGE CONTENT
-        ════════════════════════════════════════ */}
-        <div style={{ position: "relative", zIndex: 1, padding: "20px 18px 90px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {/* ══════════════════════════
+            HERO
+        ══════════════════════════ */}
+        <div style={{ position:"relative", zIndex:1, maxWidth:980, margin:"0 auto", padding:"64px 24px 0" }}>
 
-          {/* ══════════ POSTER ══════════ */}
-          <div style={{
-            width: "100%", maxWidth: 1080,
-            display: "flex", flexDirection: "column",
-            border: `1px solid ${C.border}`,
-            position: "relative",
-          }}
-            className="poster-cols"
-          >
-            {/* corner dots */}
-            {[{top:-3,left:-3},{top:-3,right:-3},{bottom:-3,left:-3},{bottom:-3,right:-3}].map((pos,i) => (
-              <div key={i} style={{ position: "absolute", width: 6, height: 6, borderRadius: "50%", background: "rgba(107,143,212,0.3)", ...pos }} />
-            ))}
+          {/* overline */}
+          <div className="h1" style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20 }}>
+            <div className="dot" />
+            <span style={{ fontSize:9, letterSpacing:5, textTransform:"uppercase", color:"rgba(232,228,216,0.38)" }}>Mangon Dining // 001</span>
+          </div>
 
-            {/* ── LEFT panel ── */}
-            <div style={{ flex: 1, padding: "48px 42px 44px", background: C.bgCard, position: "relative" }} className="p-left">
+          {/* two-column */}
+          <div className="hero-cols">
 
-              {/* ghost watermark */}
-              <div style={{ position: "absolute", bottom: 16, right: 14, fontFamily: "'Playfair Display', serif", fontSize: 110, fontWeight: 900, color: "rgba(107,143,212,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>01</div>
-
-              <div style={S.rule} />
-
-              <p style={{ textAlign: "center", fontSize: 9, letterSpacing: 5, textTransform: "uppercase", color: "rgba(107,143,212,0.6)", margin: "18px 0 12px" }}>
-                Mangon Dining Presents
-              </p>
-
-              <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(54px,10vw,78px)", fontWeight: 900, lineHeight: 0.87, color: C.cream, textAlign: "center", letterSpacing: -1 }}>
+            {/* LEFT */}
+            <div style={{ flex:1, minWidth:0 }}>
+              <h1 className="h2" style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:"clamp(62px,12vw,130px)", fontWeight:700, lineHeight:0.86, letterSpacing:-3, margin:"0 0 8px" }}>
                 MANGON
               </h1>
-              <p style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(17px,3vw,23px)", fontStyle: "italic", color: "rgba(107,143,212,0.75)", textAlign: "center", letterSpacing: 2, margin: "6px 0 20px" }}>
-                Dining / Pop-Up Vol. 1
+              <p className="h2" style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:"clamp(13px,2.2vw,19px)", fontStyle:"italic", fontWeight:300, letterSpacing:6, color:"rgba(232,228,216,0.42)", marginBottom:26 }}>
+                DINING EXPERIENCE
               </p>
 
               {/* meta */}
-              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 8, marginBottom: 18 }}>
-                {["Jun 6, 2025", "Friday Night", "9PM to 1AM", "Santa Ana, CA"].map((t, i) => (
-                  <span key={t} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 11, color: "rgba(235,228,216,0.55)", letterSpacing: 0.8 }}>{t}</span>
-                    {i < 3 && <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 16 }}>/</span>}
-                  </span>
-                ))}
-              </div>
-
-              {/* pills */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 5, justifyContent: "center", marginBottom: 22 }}>
-                {["Passed Bites", "Mocktail Bar", "DJ Sleezy", "BYOB Welcome", "Photo Booth", "60 Seats"].map(t => (
-                  <span key={t} style={{ fontSize: 8, letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(235,228,216,0.32)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 999, padding: "4px 11px" }}>{t}</span>
-                ))}
-              </div>
-
-              <div style={{ marginBottom: 18 }}><Orn /></div>
-
-              <p style={{ fontSize: 8, letterSpacing: 5, textTransform: "uppercase", color: "rgba(107,143,212,0.5)", textAlign: "center", marginBottom: 10 }}>The Menu</p>
-              <div>
-                {bites.map((b, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "9px 0", borderBottom: i < bites.length - 1 ? "1px solid rgba(255,255,255,0.045)" : "none" }}>
-                    <span style={{ fontFamily: "'Playfair Display', serif", fontSize: 13, color: "rgba(235,228,216,0.68)" }}>{b.name}</span>
-                    {b.note && <span style={{ fontSize: 8, letterSpacing: 1.5, textTransform: "uppercase", color: "rgba(107,143,212,0.45)", whiteSpace: "nowrap", flexShrink: 0 }}>{b.note}</span>}
+              <div className="h3 meta-row" style={{ borderTop:"1px solid rgba(232,228,216,0.1)", borderBottom:"1px solid rgba(232,228,216,0.1)", padding:"13px 0", marginBottom:24 }}>
+                {[["Date","June 05, 2025"],["Time","9PM — 1AM"],["Location","Santa Ana, CA"],["Ticket","$45 / person"]].map(([l,v]) => (
+                  <div key={l}>
+                    <p style={{ fontSize:8, letterSpacing:3, textTransform:"uppercase", color:"rgba(232,228,216,0.28)", marginBottom:3 }}>{l}</p>
+                    <p style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:15, fontWeight:600 }}>{v}</p>
                   </div>
                 ))}
               </div>
-              <p style={{ fontSize: 9, textAlign: "center", color: "rgba(255,255,255,0.16)", letterSpacing: 2, textTransform: "uppercase", marginTop: 8, marginBottom: 22 }}>
-                + Complimentary grazing table all night
-              </p>
 
-              <div style={{ marginBottom: 22 }}><Orn /></div>
-              <div style={S.rule} />
+              {/* pillars */}
+              <div className="h3" style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", border:"1px solid rgba(232,228,216,0.08)", marginBottom:32 }}>
+                {["Curated Menu","Live DJ — Sleezy","Mocktail Bar"].map((t,i) => (
+                  <div key={t} style={{ padding:"11px 8px", textAlign:"center", borderRight: i < 2 ? "1px solid rgba(232,228,216,0.08)" : "none" }}>
+                    <span style={{ fontSize:8, letterSpacing:2.5, textTransform:"uppercase", color:"rgba(232,228,216,0.38)" }}>{t}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* SIP BITES BEATS */}
+              <div className="h4" style={{ marginBottom:32 }}>
+                {[["SIP",0.16],["BITES",1],["BEATS",0.16]].map(([w,op]) => (
+                  <p key={w} style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:"clamp(36px,7vw,78px)", fontWeight:700, lineHeight:0.94, color:`rgba(232,228,216,${op})`, letterSpacing:-2, margin:0 }}>{w}</p>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <div className="h5" style={{ marginBottom:56 }}>
+                <button className="cta" style={{ maxWidth:340, display:"block" }}
+                  onClick={() => document.getElementById("rsvp").scrollIntoView({ behavior:"smooth" })}>
+                  Reserve Your Seat — $45
+                </button>
+                <p style={{ fontSize:9, letterSpacing:2, textTransform:"uppercase", color:"rgba(232,228,216,0.18)", marginTop:9 }}>
+                  60 seats only / BYOB welcome / group discounts available
+                </p>
+              </div>
             </div>
 
-            {/* ── RIGHT panel ── */}
-            <div style={{ padding: "44px 40px", display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 24, position: "relative" }} className="p-right">
+            {/* RIGHT — poster */}
+            <div className="hero-poster-wrap h1">
+              <div style={{ position:"relative", overflow:"hidden", border:"1px solid rgba(232,228,216,0.1)" }}>
+                <img src="poster1.JPG" alt="Mangon Dining Pop-Up Vol. 1" style={{ width:"100%", display:"block", objectFit:"cover" }} />
+                <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, transparent 55%, rgba(13,18,41,0.45) 100%)", pointerEvents:"none" }} />
+              </div>
+              <p style={{ fontSize:8, letterSpacing:3, textTransform:"uppercase", color:"rgba(232,228,216,0.22)", marginTop:10, textAlign:"center" }}>
+                Mangon Dining // 001 // June 05
+              </p>
+            </div>
+          </div>
+        </div>
 
-              {/* ghost watermark */}
-              <div style={{ position: "absolute", top: -8, right: 18, fontFamily: "'Playfair Display', serif", fontSize: 90, fontWeight: 900, fontStyle: "italic", color: "rgba(107,143,212,0.04)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>Vol.1</div>
+        {/* ══════════════════════════
+            TICKER
+        ══════════════════════════ */}
+        <div className="tw" style={{ position:"relative", zIndex:1, borderTop:"1px solid rgba(232,228,216,0.08)", borderBottom:"1px solid rgba(232,228,216,0.08)", padding:"12px 0", overflow:"hidden", marginBottom:56 }}>
+          <div style={{ display:"flex", transform:`translateX(-${offset}px)`, willChange:"transform" }}>
+            {repeated.map((item, i) => (
+              <span key={i} style={{ flexShrink:0, width:120, fontFamily:"'Cormorant Garamond', serif", fontSize:13, fontWeight:600, letterSpacing:3, textTransform:"uppercase", color: i % (tickerItems.length * 2) === 1 ? C.cream : "rgba(232,228,216,0.18)" }}>
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
 
-              <div>
-                <div style={{ ...S.rule, marginBottom: 26 }} />
-                <p style={{ fontSize: 9, letterSpacing: 4, textTransform: "uppercase", color: "rgba(107,143,212,0.5)", marginBottom: 8 }}>Why you are going</p>
-                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(24px,3vw,34px)", fontWeight: 700, lineHeight: 1.1, color: C.cream, marginBottom: 10 }}>
-                  {"Don't be the one"}
-                  <br />
-                  <em style={{ fontStyle: "italic", color: "rgba(235,228,216,0.35)" }}>{"hearing about it after."}</em>
-                </h2>
-                <p style={{ fontSize: 12, color: C.muted, lineHeight: 1.7, marginBottom: 16 }}>
-                  {"Seven passed small bites, craft mocktails, live RnB from DJ Sleezy — all inside a fully transformed botanical venue in Santa Ana. 60 seats. That's it."}
-                </p>
+        {/* ══════════════════════════
+            MENU
+        ══════════════════════════ */}
+        <div style={{ position:"relative", zIndex:1, maxWidth:680, margin:"0 auto", padding:"0 24px 56px" }}>
+          <div style={{ border:"1px solid rgba(232,228,216,0.08)" }}>
+            <div style={{ borderBottom:"1px solid rgba(232,228,216,0.08)", padding:"18px 24px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+              <h2 style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:26, fontWeight:700, letterSpacing:-0.5 }}>The Menu</h2>
+              <span style={{ fontSize:9, letterSpacing:3, textTransform:"uppercase", color:"rgba(232,228,216,0.28)" }}>7 bites / 1 night</span>
+            </div>
+            {bites.map((b, i) => (
+              <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"13px 24px", borderBottom: i < bites.length - 1 ? "1px solid rgba(232,228,216,0.06)" : "none" }}>
+                <span style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:15, fontWeight:600 }}>{b.name}</span>
+                {b.note && <span style={{ fontSize:8, letterSpacing:2, textTransform:"uppercase", color:"rgba(232,228,216,0.28)", flexShrink:0, marginLeft:12 }}>{b.note}</span>}
+              </div>
+            ))}
+            <div style={{ padding:"13px 24px", borderTop:"1px solid rgba(232,228,216,0.06)" }}>
+              <p style={{ fontSize:10, color:"rgba(232,228,216,0.28)", letterSpacing:1 }}>+ Complimentary grazing table all night</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ══════════════════════════
+            RSVP FORM
+        ══════════════════════════ */}
+        <div id="rsvp" style={{ position:"relative", zIndex:1, maxWidth:680, margin:"0 auto", padding:"0 24px 80px" }}>
+
+          <div style={{ marginBottom:28 }}>
+            <h2 style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:"clamp(34px,6vw,56px)", fontWeight:700, lineHeight:0.9, letterSpacing:-1, marginBottom:10 }}>
+              RESERVE<br />
+              <em style={{ fontStyle:"italic", fontWeight:300, color:"rgba(232,228,216,0.35)" }}>your seat.</em>
+            </h2>
+            <p style={{ fontSize:11, color:"rgba(232,228,216,0.38)", lineHeight:1.6 }}>
+              {"Fill this out, scan the QR to pay, DM @antdoan your screenshot. That's it."}
+            </p>
+          </div>
+
+          {sent ? (
+            <div style={{ border:"1px solid rgba(232,228,216,0.15)", padding:"44px 28px", textAlign:"center" }}>
+              <h3 style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:34, fontWeight:700, marginBottom:12 }}>{"You're in."} &#10022;</h3>
+              <p style={{ fontSize:12, color:"rgba(232,228,216,0.45)", lineHeight:1.75 }}>
+                {"Send"} <strong style={{ color:C.cream }}>${total}</strong> {"via"} <strong style={{ color:C.cream }}>{payMethod || "Venmo or Zelle"}</strong>
+                {" then DM "}<strong style={{ color:C.cream }}>@antdoan</strong>{" with your name and screenshot. Address drops 48 hrs before. See you June 5."}
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+
+              {/* name + ig */}
+              <div className="two-col" style={{ marginBottom:12 }}>
                 <div>
-                  {details.map(([l, v], i) => (
-                    <div key={l} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "9px 0", borderBottom: i < details.length - 1 ? "1px solid rgba(255,255,255,0.045)" : "none" }}>
-                      <span style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: C.label }}>{l}</span>
-                      <span style={{ fontSize: 12, color: C.mutedMd }}>{v}</span>
-                    </div>
+                  <label style={labelSt}>Full Name *</label>
+                  <input ref={nameRef} type="text" placeholder="First Last" required />
+                </div>
+                <div>
+                  <label style={labelSt}>Instagram *</label>
+                  <input ref={igRef} type="text" placeholder="@yourhandle" required />
+                </div>
+              </div>
+
+              {/* phone + tickets */}
+              <div className="two-col" style={{ marginBottom:20 }}>
+                <div>
+                  <label style={labelSt}>Phone *</label>
+                  <input ref={phoneRef} type="tel" placeholder="(xxx) xxx-xxxx" required />
+                </div>
+                <div>
+                  <label style={labelSt}>Tickets *</label>
+                  <div style={{ display:"flex", border:"1px solid rgba(232,228,216,0.1)" }}>
+                    <button type="button" className="sb" onClick={() => setQty(q => Math.max(1,q-1))} disabled={qty===1}>&#8722;</button>
+                    <span style={{ flex:1, textAlign:"center", fontSize:14, borderLeft:"1px solid rgba(232,228,216,0.1)", borderRight:"1px solid rgba(232,228,216,0.1)", height:44, display:"flex", alignItems:"center", justifyContent:"center" }}>{qty}</span>
+                    <button type="button" className="sb" onClick={() => setQty(q => Math.min(4,q+1))} disabled={qty===4}>&#43;</button>
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:7 }}>
+                    <span style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:22, fontWeight:700 }}>${total}</span>
+                    {savings > 0 && <span style={{ fontSize:12, color:"rgba(232,228,216,0.25)", textDecoration:"line-through" }}>${original}</span>}
+                    {savings > 0 && <span style={{ fontSize:8, letterSpacing:1.5, textTransform:"uppercase", border:"1px solid rgba(232,228,216,0.18)", padding:"2px 7px", color:"rgba(232,228,216,0.5)" }}>Save ${savings}</span>}
+                  </div>
+                  {qty >= 3 && <p style={{ fontSize:9, color:"rgba(232,228,216,0.38)", marginTop:3 }}>{qty===3 ? "Group of 3 — $12 off" : "Group of 4 — $20 off"}</p>}
+                </div>
+              </div>
+
+              {/* how heard */}
+              <div style={{ marginBottom:18 }}>
+                <label style={labelSt}>{"How'd you hear about us? *"}</label>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                  {["Instagram","TikTok","Friend","Other"].map(o => (
+                    <button type="button" key={o} className={"pill"+(heard===o?" on":"")} onClick={()=>setHeard(o)}>{o}</button>
                   ))}
                 </div>
               </div>
 
-              <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: "rgba(107,143,212,0.07)", border: "1px solid rgba(107,143,212,0.16)", borderRadius: 999, padding: "8px 16px", marginBottom: 14, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: "rgba(107,143,212,0.7)" }}>
-                  <span>&#9733;</span>
-                  <span>First 20 guests — complimentary mocktail</span>
-                </div>
-                <button
-                  onClick={() => document.getElementById("register").scrollIntoView({ behavior: "smooth" })}
-                  style={{ display: "block", width: "100%", textAlign: "center", background: C.cream, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: 4, textTransform: "uppercase", padding: "16px 24px", borderRadius: 999, border: "none", cursor: "pointer", marginBottom: 9 }}
-                >
-                  Reserve Your Seat — $45
-                </button>
-                <p style={{ textAlign: "center", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: C.faint, marginBottom: 12 }}>
-                  60 seats / Venmo or Zelle / Group discounts below
-                </p>
-                <a href="https://instagram.com/antdoan" target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", fontSize: 10, letterSpacing: 2, color: "rgba(107,143,212,0.45)", textDecoration: "none" }}>
-                  Questions — DM @antdoan
-                </a>
-                <div style={{ ...S.rule, marginTop: 22 }} />
+              {/* dietary */}
+              <div style={{ marginBottom:18 }}>
+                <label style={labelSt}>Dietary Restrictions</label>
+                <input ref={dietRef} type="text" placeholder="None, shellfish allergy, etc." />
               </div>
-            </div>
-          </div>
 
-          {/* ══════════ FORM ══════════ */}
-          <div id="register" ref={null} style={{ width: "100%", maxWidth: 1080, borderLeft: `1px solid ${C.border}`, borderRight: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`, background: C.bgForm, padding: "56px 42px 60px", position: "relative" }}>
-
-            {/* decorative shapes inside form */}
-            <div style={{ position: "absolute", top: 38, left: 28, width: 80, height: 80, borderRadius: "50%", border: "1px solid rgba(107,143,212,0.07)", pointerEvents: "none" }} />
-            <div style={{ position: "absolute", bottom: 55, right: 38, width: 50, height: 50, border: "1px solid rgba(107,143,212,0.06)", transform: "rotate(30deg)", pointerEvents: "none" }} />
-            <div style={{ position: "absolute", top: -8, right: 32, fontFamily: "'Playfair Display', serif", fontSize: 120, fontWeight: 900, color: "rgba(107,143,212,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>Vol.1</div>
-
-            <div style={{ textAlign: "center", marginBottom: 44, position: "relative", zIndex: 1 }}>
-              <p style={{ fontSize: 9, letterSpacing: 5, textTransform: "uppercase", color: "rgba(107,143,212,0.5)", marginBottom: 10 }}>Mangon Dining / June 6, 2025</p>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(30px,5vw,46px)", fontWeight: 700, color: C.cream, marginBottom: 6 }}>Lock In Your Spot</h2>
-              <p style={{ fontSize: 12, color: "rgba(235,228,216,0.3)" }}>{"Fill this out, send payment, DM us your screenshot. That's it."}</p>
-            </div>
-
-            {sent ? (
-              <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center", padding: "48px 28px", border: "1px solid rgba(107,143,212,0.18)", borderRadius: 20, background: "rgba(107,143,212,0.04)" }}>
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 30, color: C.cream, marginBottom: 12 }}>{"You're locked in"} &#10022;</h3>
-                <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.75 }}>
-                  {"Send"} <strong style={{ color: C.mutedMd }}>${total}</strong> {"via"} <strong style={{ color: C.mutedMd }}>{payMethod || "your chosen method"}</strong>{" "}
-                  {"then DM"} <strong style={{ color: C.accentSolid }}>@antdoan</strong> {"on Instagram with your name and payment screenshot. Exact address drops 48 hrs before. See you June 6."}
-                </p>
+              {/* notes */}
+              <div style={{ marginBottom:26 }}>
+                <label style={labelSt}>Anything else?</label>
+                <textarea ref={notesRef} placeholder="Questions, requests, whatever." />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ position: "relative", zIndex: 1 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, maxWidth: 680, margin: "0 auto 28px" }} className="fgrid">
 
-                  <div>
-                    <label style={{ display: "block", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.26)", marginBottom: 7 }}>Full Name *</label>
-                    <input ref={nameRef} type="text" placeholder="First Last" style={inputSt} required />
-                  </div>
-
-                  <div>
-                    <label style={{ display: "block", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.26)", marginBottom: 7 }}>Instagram Handle *</label>
-                    <input ref={igRef} type="text" placeholder="@yourhandle" style={inputSt} required />
-                  </div>
-
-                  <div style={{ gridColumn: "1 / -1" }}>
-                    <label style={{ display: "block", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.26)", marginBottom: 7 }}>Phone Number *</label>
-                    <input ref={phoneRef} type="tel" placeholder="(xxx) xxx-xxxx" style={inputSt} required />
-                  </div>
-
-                  {/* ticket stepper */}
-                  <div style={{ gridColumn: "1 / -1" }}>
-                    <label style={{ display: "block", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.26)", marginBottom: 7 }}>Number of Tickets *</label>
-                    <div style={{ display: "flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 14, overflow: "hidden", maxWidth: 200 }}>
-                      <button type="button" onClick={() => setQty(q => Math.max(1, q - 1))} disabled={qty === 1}
-                        style={{ background: "rgba(255,255,255,0.04)", border: "none", color: qty === 1 ? "rgba(235,228,216,0.2)" : "rgba(235,228,216,0.6)", fontSize: 20, width: 48, height: 48, cursor: qty === 1 ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        &#8722;
-                      </button>
-                      <span style={{ flex: 1, textAlign: "center", fontSize: 14, fontWeight: 500, color: C.cream, borderLeft: "1px solid rgba(255,255,255,0.07)", borderRight: "1px solid rgba(255,255,255,0.07)", height: 48, display: "flex", alignItems: "center", justifyContent: "center" }}>{qty}</span>
-                      <button type="button" onClick={() => setQty(q => Math.min(4, q + 1))} disabled={qty === 4}
-                        style={{ background: "rgba(255,255,255,0.04)", border: "none", color: qty === 4 ? "rgba(235,228,216,0.2)" : "rgba(235,228,216,0.6)", fontSize: 20, width: 48, height: 48, cursor: qty === 4 ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        &#43;
-                      </button>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 9, flexWrap: "wrap" }}>
-                      <span style={{ fontFamily: "'Playfair Display', serif", fontSize: 30, fontWeight: 700, color: C.cream }}>${total}</span>
-                      {savings > 0 && <span style={{ fontSize: 14, color: "rgba(255,255,255,0.22)", textDecoration: "line-through" }}>${original}</span>}
-                      {savings > 0 && <span style={{ fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: "rgba(107,143,212,0.7)", background: "rgba(107,143,212,0.08)", border: "1px solid rgba(107,143,212,0.18)", borderRadius: 999, padding: "3px 10px" }}>Save ${savings}</span>}
-                    </div>
-                    {qty >= 3 && <p style={{ fontSize: 10, color: "rgba(107,143,212,0.6)", letterSpacing: 1, marginTop: 5 }}>{qty === 3 ? "Group of 3 — $12 off applied" : "Group of 4 — $20 off applied"}</p>}
-                  </div>
-
-                  {/* how heard */}
-                  <div style={{ gridColumn: "1 / -1" }}>
-                    <label style={{ display: "block", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.26)", marginBottom: 7 }}>{"How'd you hear about us? *"}</label>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                      {["Instagram", "TikTok", "Friend / Word of mouth", "The pho spot", "Other"].map(o => (
-                        <div key={o} onClick={() => setHeard(o)}
-                          style={{ display: "flex", alignItems: "center", gap: 7, background: heard === o ? "rgba(107,143,212,0.08)" : "rgba(255,255,255,0.025)", border: heard === o ? "1px solid rgba(107,143,212,0.55)" : "1px solid rgba(255,255,255,0.08)", borderRadius: 999, padding: "9px 15px", cursor: "pointer", flex: 1, minWidth: 110 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "50%", border: heard === o ? "none" : "1px solid rgba(255,255,255,0.22)", background: heard === o ? C.accentSolid : "transparent", flexShrink: 0 }} />
-                          <span style={{ fontSize: 11, color: heard === o ? "rgba(235,228,216,0.88)" : "rgba(235,228,216,0.55)" }}>{o}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* payment method */}
-                  <div style={{ gridColumn: "1 / -1" }}>
-                    <label style={{ display: "block", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.26)", marginBottom: 7 }}>Payment Method *</label>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                      {[["Venmo", VENMO], ["Zelle", ZELLE]].map(([name, handle]) => {
-                        const val = name + " — " + handle;
-                        return (
-                          <div key={val} onClick={() => setPayMethod(val)}
-                            style={{ display: "flex", alignItems: "center", gap: 7, background: payMethod === val ? "rgba(107,143,212,0.08)" : "rgba(255,255,255,0.025)", border: payMethod === val ? "1px solid rgba(107,143,212,0.55)" : "1px solid rgba(255,255,255,0.08)", borderRadius: 999, padding: "9px 15px", cursor: "pointer", flex: 1, minWidth: 140 }}>
-                            <div style={{ width: 8, height: 8, borderRadius: "50%", border: payMethod === val ? "none" : "1px solid rgba(255,255,255,0.22)", background: payMethod === val ? C.accentSolid : "transparent", flexShrink: 0 }} />
-                            <span style={{ fontSize: 11, color: payMethod === val ? "rgba(235,228,216,0.88)" : "rgba(235,228,216,0.55)" }}>{name} — {handle}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* dietary */}
-                  <div style={{ gridColumn: "1 / -1" }}>
-                    <label style={{ display: "block", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.26)", marginBottom: 7 }}>Dietary Restrictions / Allergies</label>
-                    <input ref={dietRef} type="text" placeholder="None, shellfish allergy, vegetarian, etc." style={inputSt} />
-                  </div>
-
-                  {/* notes */}
-                  <div style={{ gridColumn: "1 / -1" }}>
-                    <label style={{ display: "block", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.26)", marginBottom: 7 }}>Anything else?</label>
-                    <textarea ref={notesRef} placeholder="Questions, special requests, whatever." style={{ ...inputSt, resize: "vertical", minHeight: 76 }} />
-                  </div>
+              {/* QR payment */}
+              <div style={{ border:"1px solid rgba(232,228,216,0.1)", marginBottom:22 }}>
+                <div style={{ borderBottom:"1px solid rgba(232,228,216,0.08)", padding:"13px 20px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <span style={{ fontSize:9, letterSpacing:3, textTransform:"uppercase", color:"rgba(232,228,216,0.35)" }}>Step 2 — Pay</span>
+                  <span style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:18, fontWeight:700 }}>${total}</span>
                 </div>
-
-                {/* pay reminder */}
-                <div style={{ maxWidth: 680, margin: "0 auto 26px", background: "rgba(107,143,212,0.05)", border: "1px solid rgba(107,143,212,0.12)", borderRadius: 16, padding: "18px 22px" }}>
-                  <p style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "rgba(107,143,212,0.55)", marginBottom: 7 }}>Before you hit submit</p>
-                  <p style={{ fontSize: 12, color: C.muted, lineHeight: 1.65 }}>
-                    {"Your spot is"} <strong style={{ color: C.mutedMd }}>not confirmed</strong> {"until we receive payment. After submitting, send"} <strong style={{ color: C.mutedMd }}>${total}</strong> {"via your chosen method then DM"} <strong style={{ color: C.mutedMd }}>@antdoan</strong> {"with your name and screenshot. Address drops 48 hrs before. No refunds — transfers are fine."}
+                <div style={{ padding:"18px", display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }} className="two-col">
+                  {[{name:"Venmo",handle:"@antdoan",qr:"venmo.png"},{name:"Zelle",handle:"7143832562",qr:"zelleqr.png"}].map(({name,handle,qr}) => {
+                    const val = name+" — "+handle;
+                    return (
+                      <div key={name} className={"qrc"+(payMethod===val?" on":"")} onClick={()=>setPayMethod(val)}>
+                        <img src={qr} alt={name} style={{ width:"100%", maxWidth:110, aspectRatio:"1", objectFit:"contain", filter:"invert(0.82)", marginBottom:10, display:"block", margin:"0 auto 10px" }} />
+                        <p style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:15, fontWeight:600, marginBottom:2 }}>{name}</p>
+                        <p style={{ fontSize:9, color:"rgba(232,228,216,0.3)", letterSpacing:0.3 }}>{handle}</p>
+                        {payMethod===val && <p style={{ fontSize:8, letterSpacing:2, textTransform:"uppercase", color:"rgba(232,228,216,0.45)", marginTop:5 }}>Selected</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ borderTop:"1px solid rgba(232,228,216,0.06)", padding:"11px 20px" }}>
+                  <p style={{ fontSize:10, color:"rgba(232,228,216,0.28)", lineHeight:1.6 }}>
+                    Scan, send <strong style={{ color:"rgba(232,228,216,0.55)" }}>${total}</strong> with your name in the note, then DM <strong style={{ color:"rgba(232,228,216,0.55)" }}>@antdoan</strong> your screenshot.
                   </p>
                 </div>
+              </div>
 
-                {/* submit */}
-                <div style={{ maxWidth: 680, margin: "0 auto" }}>
-                  <button type="submit" disabled={loading || !payMethod || !heard}
-                    style={{ width: "100%", background: loading || !payMethod || !heard ? "rgba(234,228,216,0.4)" : C.cream, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: 4, textTransform: "uppercase", padding: "18px 24px", borderRadius: 999, border: "none", cursor: loading || !payMethod || !heard ? "not-allowed" : "pointer" }}>
-                    {loading ? "Sending..." : "Submit Registration — $" + total}
-                  </button>
-                  <p style={{ textAlign: "center", fontSize: 10, color: "rgba(255,255,255,0.16)", lineHeight: 1.6, marginTop: 14 }}>
-                    No refunds / Transfers welcome / Address sent 48 hrs before / BYOB
-                  </p>
-                </div>
-              </form>
-            )}
-          </div>
+              {/* note */}
+              <div style={{ borderLeft:"2px solid rgba(232,228,216,0.2)", paddingLeft:14, marginBottom:22 }}>
+                <p style={{ fontSize:11, color:"rgba(232,228,216,0.35)", lineHeight:1.7 }}>
+                  <strong style={{ color:"rgba(232,228,216,0.6)" }}>Spot not confirmed until payment received.</strong>{" "}
+                  {"No refunds — transfers welcome. Address sent 48 hrs before."}
+                </p>
+              </div>
 
+              <button type="submit" className="cta" disabled={loading||!payMethod||!heard}>
+                {loading ? "Submitting..." : "Submit RSVP — $"+total}
+              </button>
+              <p style={{ textAlign:"center", fontSize:9, color:"rgba(232,228,216,0.18)", marginTop:12, letterSpacing:1 }}>
+                No refunds // Transfers welcome // BYOB // Address 48hrs before
+              </p>
+            </form>
+          )}
         </div>
 
-        {/* responsive styles */}
-        <style>{`
-          .poster-cols { flex-direction: column; }
-          .p-left { border-bottom: 1px solid rgba(255,255,255,0.06); }
-          .p-right { width: 100%; }
-          @media (min-width: 860px) {
-            .poster-cols { flex-direction: row !important; }
-            .p-left { border-bottom: none !important; border-right: 1px solid rgba(255,255,255,0.06); }
-            .p-right { width: 340px !important; flex-shrink: 0; }
-          }
-          @media (min-width: 560px) {
-            .fgrid { grid-template-columns: 1fr 1fr !important; }
-          }
-          @media (max-width: 480px) {
-            .p-left, .p-right { padding: 36px 24px !important; }
-          }
-          input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.17); }
-          input:focus, textarea:focus, select:focus { border-color: rgba(107,143,212,0.45) !important; background: rgba(107,143,212,0.04) !important; outline: none; }
-        `}</style>
+        {/* footer */}
+        <div style={{ position:"relative", zIndex:1, borderTop:"1px solid rgba(232,228,216,0.07)", padding:"18px 24px", textAlign:"center" }}>
+          <p style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:11, letterSpacing:4, color:"rgba(232,228,216,0.18)" }}>
+            MANGON DINING // 001 // JUNE 05 // SANTA ANA
+          </p>
+        </div>
 
       </div>
     </>
