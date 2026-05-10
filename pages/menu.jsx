@@ -465,7 +465,7 @@ export default function Menu() {
                     <div>
                       <label style={{ display:"block", fontSize:8, letterSpacing:3, textTransform:"uppercase", color: C.inkFaint, marginBottom:8 }}>{"How'd you hear about us? *"}</label>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                        {["Instagram","TikTok","Friend","The pho spot","Other"].map(o => (
+                        {["Instagram","TikTok","Friend","Other"].map(o => (
                           <button type="button" key={o} className={"pill"+(heard===o?" on":"")} onClick={()=>setHeard(o)}>{o}</button>
                         ))}
                       </div>
