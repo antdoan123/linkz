@@ -8,6 +8,7 @@ import Head from "next/head";
 const POSTER_IMG   = "/poster1.JPG";
 const MENU_POSTER  = "/001menu.JPG";
 const ANTHONY_IMG  = "/chefdoan.JPG";
+const SLEEZY_IMG   = "/sleezy.jpg"; // drop his photo here
 const VENMO_QR     = "/venmo.png";
 const ZELLE_QR     = "/zelleqr.png";
 const VENMO_HANDLE = "@antdoan";
@@ -22,14 +23,14 @@ const tickerItems = ["SIP", "BITES", "BEATS", "JUNE 05", "9PM", "SANTA ANA", "60
 
 // colour tokens — light mode
 const C = {
-  bg:      "#f5f1ea",       // warm cream
-  bgAlt:   "#edeae2",       // slightly darker cream for alternating sections
-  ink:     "#0d0d0b",       // near black
+  bg:      "#f5f1ea",
+  bgAlt:   "#edeae2",
+  ink:     "#0d0d0b",
   inkMid:  "rgba(13,13,11,0.5)",
   inkFaint:"rgba(13,13,11,0.28)",
   border:  "rgba(13,13,11,0.1)",
   borderF: "rgba(13,13,11,0.06)",
-  accent:  "#0d1229",       // navy — used sparingly for buttons and highlights
+  accent:  "#0d1229",
 };
 
 export default function Menu() {
@@ -39,6 +40,7 @@ export default function Menu() {
   const [heard,     setHeard]     = useState("");
   const [qty,       setQty]       = useState(1);
   const [tick,      setTick]      = useState(0);
+  const [guestNames, setGuestNames] = useState(["", "", ""]);
 
   const nameRef  = useRef();
   const igRef    = useRef();
@@ -50,6 +52,11 @@ export default function Menu() {
     const id = setInterval(() => setTick(t => t + 1), 40);
     return () => clearInterval(id);
   }, []);
+  const handleGuestChange = (index, value) => {
+  const updated = [...guestNames];
+  updated[index] = value;
+  setGuestNames(updated);
+};
 
   const total    = PRICES[qty];
   const savings  = SAVINGS[qty];
@@ -70,6 +77,14 @@ export default function Menu() {
             "Name: "      + nameRef.current.value,
             "Instagram: " + igRef.current.value,
             "Phone: "     + phoneRef.current.value,
+            "Guest Names: " + (
+            qty > 1
+            ? guestNames
+           .slice(0, qty - 1)
+           .filter(Boolean)
+           .join(", ")
+         : "None"
+            ),
             "Tickets: "   + qty + " x $50 = $" + total + (savings ? " (saved $" + savings + ")" : ""),
             "Payment: "   + payMethod,
             "Heard: "     + heard,
@@ -95,14 +110,12 @@ export default function Menu() {
         <style>{`
           *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 
-          /* subtle paper grain */
           .grain {
             position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.04;
             background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
             background-repeat:repeat;
           }
 
-          /* nav */
           .nav {
             position:fixed; top:0; left:0; right:0; z-index:200;
             display:flex; align-items:center; justify-content:space-between;
@@ -131,23 +144,17 @@ export default function Menu() {
           }
           .nav-cta:hover { background:#1a2540; }
 
-          /* ticker */
           @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
           .ticker-wrap { animation:fadeIn 1s ease 0.4s both; }
 
-          /* pill buttons */
           .pill {
             padding:8px 16px; border:1px solid rgba(13,13,11,0.18);
             background:transparent; color:rgba(13,13,11,0.45);
             font-size:10px; letter-spacing:2px; text-transform:uppercase;
             cursor:pointer; transition:all 0.18s; font-family:inherit;
           }
-          .pill:hover,.pill.on {
-            border-color:#0d1229; color:#0d1229;
-            background:rgba(13,18,41,0.05);
-          }
+          .pill:hover,.pill.on { border-color:#0d1229; color:#0d1229; background:rgba(13,18,41,0.05); }
 
-          /* stepper */
           .sb {
             background:rgba(13,13,11,0.04); border:none;
             font-size:18px; width:44px; height:44px; color:rgba(13,13,11,0.5);
@@ -156,7 +163,6 @@ export default function Menu() {
           .sb:hover:not(:disabled) { background:rgba(13,13,11,0.08); }
           .sb:disabled { opacity:0.18; cursor:not-allowed; }
 
-          /* main CTA */
           .cta-btn {
             display:inline-block; padding:16px 40px;
             background:#0d1229; color:#f5f1ea;
@@ -167,11 +173,9 @@ export default function Menu() {
           .cta-btn:hover { background:#1a2540; transform:translateY(-1px); box-shadow:0 8px 28px rgba(13,18,41,0.15); }
           .cta-btn:disabled { background:rgba(13,13,11,0.12); color:rgba(13,13,11,0.3); cursor:not-allowed; transform:none; box-shadow:none; }
 
-          /* QR card */
           .qrc { border:1px solid rgba(13,13,11,0.1); padding:20px 14px; text-align:center; transition:all 0.2s; cursor:pointer; }
           .qrc:hover,.qrc.on { border-color:#0d1229; background:rgba(13,18,41,0.03); }
 
-          /* inputs */
           input,textarea {
             background:#fff; border:1px solid rgba(13,13,11,0.12);
             padding:12px 14px; font-size:13px; color:#0d0d0b;
@@ -181,10 +185,8 @@ export default function Menu() {
           input::placeholder,textarea::placeholder { color:rgba(13,13,11,0.3); }
           textarea { resize:vertical; min-height:68px; }
 
-          /* dividers */
           .divider { width:100%; height:1px; background:rgba(13,13,11,0.08); }
 
-          /* grids */
           .two-col   { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
           .story-grid{ display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:start; }
           .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start; }
@@ -202,21 +204,21 @@ export default function Menu() {
             .two-col { grid-template-columns:1fr !important; }
           }
 
-          /* live dot */
           @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
           .dot { width:6px; height:6px; border-radius:50%; background:#0d1229; animation:pulse 1.8s infinite; display:inline-block; flex-shrink:0; }
 
           .overline { font-size:9px; letter-spacing:5px; text-transform:uppercase; color:rgba(13,13,11,0.35); }
 
-          /* experience tags */
           .exp-tag {
             font-size:9px; letter-spacing:2px; text-transform:uppercase;
             color:rgba(13,13,11,0.38); border:1px solid rgba(13,13,11,0.12); padding:5px 12px;
           }
 
-          /* mobile nav cta */
           .mobile-cta { display:none; }
           @media (max-width:860px) { .mobile-cta { display:block; } }
+
+          /* DJ card hover */
+          .dj-ig:hover { opacity: 0.7; }
         `}</style>
 
         <div className="grain" />
@@ -227,6 +229,7 @@ export default function Menu() {
           <div className="nav-links">
             <button className="nav-link" onClick={() => document.getElementById("story").scrollIntoView({behavior:"smooth"})}>Our Story</button>
             <button className="nav-link" onClick={() => document.getElementById("menu-section").scrollIntoView({behavior:"smooth"})}>Menu</button>
+            <button className="nav-link" onClick={() => document.getElementById("dj-section").scrollIntoView({behavior:"smooth"})}>Music</button>
             <button className="nav-link" onClick={() => document.getElementById("rsvp").scrollIntoView({behavior:"smooth"})}>RSVP</button>
             <a href="https://instagram.com/antdoan" target="_blank" rel="noopener noreferrer" className="nav-link">@antdoan</a>
             <button className="nav-cta" onClick={() => document.getElementById("rsvp").scrollIntoView({behavior:"smooth"})}>Reserve — $50</button>
@@ -254,14 +257,14 @@ export default function Menu() {
                 </h1>
 
                 <p style={{ fontSize:"clamp(14px,1.5vw,16px)", color: C.inkMid, lineHeight:1.85, maxWidth:440, marginBottom:44 }}>
-                  An intimate Vietnamese fusion dining experience in the heart of Santa Ana. Seven passed small bites, craft mocktails, live RnB — one night only.
+                  An intimate Vietnamese fusion dining experience in the heart of Santa Ana. Seven passed small bites, craft mocktails — and live RnB/Hip Hop all night from DJ Sleezy. One night only.
                 </p>
 
                 {/* event detail grid */}
                 <div className="detail-grid" style={{ marginBottom:40 }}>
                   {[["Date","Friday, June 5"],["Time","9PM — 1AM"],["Location","Santa Ana, CA"],["Ticket","$50 / person"]].map(([l,v]) => (
                     <div key={l} style={{ padding:"16px 20px", borderRight:"1px solid rgba(13,13,11,0.08)", borderBottom:"1px solid rgba(13,13,11,0.08)" }}>
-                      <p className="" style={{ marginBottom:5 }}>{l}</p>
+                      <p className="overline" style={{ marginBottom:5 }}>{l}</p>
                       <p style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:600 }}>{v}</p>
                     </div>
                   ))}
@@ -269,7 +272,7 @@ export default function Menu() {
 
                 {/* tags */}
                 <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:44 }}>
-                  {["Passed Bites","Craft Mocktails","Live DJ","60 Seats Only"].map(t => (
+                  {["Passed Bites","Craft Mocktails","Sounds by Sleezy","60 Seats Only"].map(t => (
                     <span key={t} className="exp-tag">{t}</span>
                   ))}
                 </div>
@@ -316,15 +319,12 @@ export default function Menu() {
                     alt="Anthony Doan"
                     style={{ width:"100%", display:"block", objectFit:"cover", aspectRatio:"3/4" }}
                   />
-                  {/* bottom fade */}
                   <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, transparent 55%, rgba(245,241,234,0.7) 100%)", pointerEvents:"none" }} />
-                  {/* name tag */}
                   <div style={{ position:"absolute", bottom:24, left:24 }}>
                     <p className="overline" style={{ marginBottom:4 }}>Chef</p>
                     <p style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:600 }}>Anthony Doan</p>
                   </div>
                 </div>
-                {/* vertical accent line */}
                 <div style={{ position:"absolute", top:32, right:-20, width:1, height:72, background:"rgba(13,13,11,0.12)" }} />
               </div>
 
@@ -377,7 +377,47 @@ export default function Menu() {
               </div>
 
               <div style={{ overflow:"hidden", border:"1px solid rgba(13,13,11,0.08)" }}>
-                <img src={MENU_POSTER} alt="Mangon Dining Menu" style={{ width:"100%", display:"block", objectFit:"cover" }} />
+                <img src={MENU_POSTER} alt="Mangon Dining Menu" style={{ maxWidth:1140, width:"100%", display:"block", objectFit:"cover" }} />
+              </div>
+            </div>
+          </section>
+
+          <div className="divider" />
+
+          {/* ════════════ DJ SLEEZY ════════════ */}
+          <section id="dj-section" style={{ maxWidth:1140, margin:"0 auto", padding:"100px 52px" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:64, flexWrap:"wrap" }}>
+
+              {/* Photo */}
+              <div style={{ flexShrink:0 }}>
+                <div style={{ width:200, height:200, borderRadius:"50%", overflow:"hidden", border:"1px solid rgba(13,13,11,0.1)" }}>
+                  <img
+                    src="/djsleezy.jpeg"
+                    alt="DJ Sleezy"
+                    style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center" }}
+                  />
+                </div>
+              </div>
+
+              {/* Text */}
+              <div style={{ flex:1, minWidth:220 }}>
+                <p className="overline" style={{ marginBottom:12 }}>Music by</p>
+                <h2 style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"clamp(36px,5vw,64px)", fontWeight:700, lineHeight:0.9, letterSpacing:-2, marginBottom:16 }}>
+                  Sounds by Sleezy
+                </h2>
+                <div style={{ width:36, height:1, background:"rgba(13,13,11,0.2)", marginBottom:18 }} />
+                <p style={{ fontSize:15, color: C.inkMid, lineHeight:1.85, marginBottom:24, maxWidth:500 }}>
+                  Live RnB/Hip Hop all night. Setting the tone from doors open to last rounds — the kind of music you feel in the room.
+                </p>
+                <a
+                  href="https://instagram.com/Steven.le"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="dj-ig"
+                  style={{ fontSize:10, letterSpacing:3, textTransform:"uppercase", color: C.accent, textDecoration:"none", borderBottom:"1px solid rgba(13,18,41,0.25)", paddingBottom:3, transition:"opacity 0.2s" }}
+                >
+                  @Steven.le
+                </a>
               </div>
             </div>
           </section>
@@ -398,11 +438,11 @@ export default function Menu() {
                 </h2>
                 <div style={{ width:36, height:1, background:"rgba(13,13,11,0.2)", marginBottom:28 }} />
                 <p style={{ fontSize:14, color: C.inkMid, lineHeight:1.8, marginBottom:36 }}>
-                  {"Fill this out, scan the QR code to pay, then DM @antdoan your name and screenshot. That's it."}
+                  {"Fill this out, scan the QR code to pay. That's it."}
                 </p>
 
                 <div style={{ display:"flex", flexDirection:"column" }}>
-                  {[["Date","Friday, June 5, 2026"],["Time","9:00 PM — 1:00 AM"],["Where","Santa Ana, CA"],["Music","DJ - Live RnB"],["Dress","Your best fit"]].map(([l,v],i,arr) => (
+                  {[["Date","Friday, June 5, 2026"],["Time","9:00 PM — 1:00 AM"],["Where","Santa Ana, CA"],["Music","Sounds by Sleezy — Live RnB"],["Dress","Your best fit"]].map(([l,v],i,arr) => (
                     <div key={l} style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderBottom: i < arr.length-1 ? "1px solid rgba(13,13,11,0.07)" : "none" }}>
                       <span className="overline">{l}</span>
                       <span style={{ fontSize:12, color: C.inkMid }}>{v}</span>
@@ -423,8 +463,8 @@ export default function Menu() {
                   <div style={{ border:"1px solid rgba(13,13,11,0.1)", padding:"56px 40px", textAlign:"center", background:"#fff" }}>
                     <h3 style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:40, fontWeight:700, marginBottom:14 }}>{"You're in."} &#10022;</h3>
                     <p style={{ fontSize:13, color: C.inkMid, lineHeight:1.8 }}>
-                      Send <strong style={{ color: C.ink }}>${total}</strong> via <strong style={{ color: C.ink }}>{payMethod || "Venmo or Zelle"}</strong> then DM{" "}
-                      <strong style={{ color: C.ink }}>@antdoan</strong> with your name and screenshot. Address drops 48 hrs before. See you June 5.
+                      Send <strong style={{ color: C.ink }}>${total}</strong> via <strong style={{ color: C.ink }}>{payMethod || "Venmo or Zelle"}</strong> then we will send you a{" "}
+                      <strong style={{ color: C.ink }}>confirmation</strong> once your payment has been recieved. Address drops 48 hrs before. See you June 5.
                     </p>
                   </div>
                 ) : (
@@ -453,6 +493,57 @@ export default function Menu() {
                           <span style={{ flex:1, textAlign:"center", fontSize:14, color: C.ink, borderLeft:"1px solid rgba(13,13,11,0.1)", borderRight:"1px solid rgba(13,13,11,0.1)", height:44, display:"flex", alignItems:"center", justifyContent:"center" }}>{qty}</span>
                           <button type="button" className="sb" onClick={() => setQty(q => Math.min(4,q+1))} disabled={qty===4}>&#43;</button>
                         </div>
+                        {/* Additional Guests */}
+{qty > 1 && (
+  <div
+    style={{
+      border: "1px solid rgba(13,13,11,0.08)",
+      background: "#fff",
+      padding: "18px",
+    }}
+  >
+    <p
+      style={{
+        fontSize: 8,
+        letterSpacing: 3,
+        textTransform: "uppercase",
+        color: C.inkFaint,
+        marginBottom: 14,
+      }}
+    >
+      Additional Guest Names
+    </p>
+
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {Array.from({ length: qty - 1 }).map((_, index) => (
+        <div key={index}>
+          <label
+            style={{
+              display: "block",
+              fontSize: 8,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              color: C.inkFaint,
+              marginBottom: 6,
+            }}
+          >
+            Guest {index + 2}
+          </label>
+
+          <input
+            type="text"
+            placeholder={`Guest ${index + 2} Full Name`}
+            value={guestNames[index]}
+            onChange={(e) =>
+              handleGuestChange(index, e.target.value)
+            }
+            required
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+)}
                         <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:8 }}>
                           <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:24, fontWeight:700 }}>${total}</span>
                           {savings > 0 && <span style={{ fontSize:12, color: C.inkFaint, textDecoration:"line-through" }}>${original}</span>}
@@ -502,7 +593,7 @@ export default function Menu() {
                       </div>
                       <div style={{ padding:"12px 20px", borderTop:"1px solid rgba(13,13,11,0.06)" }}>
                         <p style={{ fontSize:10, color: C.inkFaint, lineHeight:1.6 }}>
-                          Scan, send <strong style={{ color: C.inkMid }}>${total}</strong> with your name in the note, then DM <strong style={{ color: C.inkMid }}>@antdoan</strong> your screenshot to confirm.
+                          Scan, send <strong style={{ color: C.inkMid }}>${total}</strong> with your name in the note, we will send you a <strong style={{ color: C.inkMid }}>confirmation</strong> once your payment has been recieved!.
                         </p>
                       </div>
                     </div>
@@ -519,7 +610,7 @@ export default function Menu() {
                     </button>
 
                     <p style={{ textAlign:"center", fontSize:9, color: C.inkFaint, letterSpacing:1, textTransform:"uppercase" }}>
-                      No refunds // Transfers welcome // BYOB // Address 48hrs before
+                      No refunds // Transfers welcome // Address 48hrs before
                     </p>
                   </form>
                 )}
