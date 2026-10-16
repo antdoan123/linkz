@@ -1,54 +1,53 @@
 import Head from "next/head"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Calendar, Clock, Users, UtensilsCrossed, ExternalLink } from "lucide-react"
 
 export default function InvitePage() {
-  // EDIT THESE
   const event = {
-    title: "Anthony’s Circle",
-    subtitle: "Appreciation Night",
-    dateText: "Friday, March 6",
+    title: "Halloween Night",
+    subtitle: "WARNING: you might die",
+    dateText: "Friday, October 30",
     timeText: "6:00 PM",
     locationName: "Stanton, CA",
     addressLine: "Cloud House Apartment",
-    rsvpUrl: "https://forms.gle/CatufaErhUBJestW7", // <-- replace with your RSVP link
-    dressCode: "Smart casual",
+    rsvpUrl: "https://forms.gle/CatufaErhUBJestW7",
+    dressCode: "Halloween Costume Encouraged",
     note:
-      "A small appreciation party for the people I met this year. Come eat, drink, connect, and vibe. Feel free to bring a friend.",
+      "A spooky night filled with witch potions, spooky games, and deadly vibes",
   }
 
   const menu = {
-    header: "Food Menu *subject to change",
+    header: "Food Menu",
+    subheader: "*subject to change",
     sections: [
       {
         title: "Small Bites",
         items: [
-          "Bánh mì board (build-your-own)",
-          "Spicy Soy-Marianted Devil Eggs",
+          { name: "Fish Sauce Caramel Crispy Chicken", description: "double-fried chicken, fish sauce caramel, thai chili, yuzu aioli" },
+          { name: "Salsa & Chips", description: "habanero-salsa, torilla chips" },
         ],
       },
       {
         title: "Main",
         items: [
-          "Vietnamese-style bossam (pork belly + pickles + sauces)",
-          "Crying Tiger Steak",
-          "Vietnamese Shrimp Stir-Fry Macaroni",
+          { name: "Vietnamese-Style Bossam", description: "lemongrass sliced pork, soy-glaze, torched to caramelize, butter lettuce, banh hoi" },
+          { name: "Grilled Tiger Prawn", description: "butterfly-shrimp, garlic-lime butter. breadcrumbs" },
+          { name: "Vietnamese Garlic Noodles", description: "egg noodles, sweet-soy glaze, garlic butter, crispy shallot" },
         ],
       },
       {
         title: "Drinks",
         items: [
-          "Signature cocktail",
-          "Hennessy",
+          { name: "Signature Cocktail", description: null },
+          { name: "Hennessy", description: null },
         ],
       },
     ],
     footer:
-      "If you have dietary restrictions, add it in the RSVP and I’ll do my best to accommodate.",
+      "If you have dietary restrictions, add it in the RSVP and I'll do my best to accommodate.",
   }
 
   const agenda = [
@@ -62,221 +61,204 @@ export default function InvitePage() {
     <>
       <Head>
         <title>{event.title} | Invitation</title>
-        <meta
-          name="description"
-          content="Invitation to a appreciation night hosted by Anthony. RSVP for date, time, location, and menu details."
-        />
+        <meta name="description" content="Invitation to an appreciation night hosted by Anthony. RSVP for date, time, location, and menu details." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main className="min-h-screen bg-white text-black font-sans">
+      <main
+        className="min-h-screen text-white font-sans"
+        style={{
+          backgroundImage: "linear-gradient(rgba(10,5,20,0.82), rgba(10,5,20,0.88)), url('/housebg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
+      >
+
         {/* HERO */}
         <section className="py-20 text-center px-4">
           <div className="max-w-3xl mx-auto">
-            <p className="uppercase tracking-widest text-sm text-gray-500 mb-3">
+            <p className="uppercase tracking-widest text-sm text-orange-400/80 mb-3">
               You&apos;re invited
             </p>
-            <h1 className="text-5xl md:text-6xl font-serif mb-3">
+            <h1 className="text-5xl md:text-6xl font-serif mb-6 text-white drop-shadow-lg">
               {event.title}
             </h1>
-                      <Avatar className="w-32 h-32 mx-auto border-4 border-black shadow-md overflow-hidden rounded-full mb-6">
-                        <AvatarImage
-                          src="/antpp.JPG"
-                          alt="Anthony"
-                          className="w-full h-full object-cover object-[center_30%]"
-                        />
-                        <AvatarFallback className="text-2xl bg-black text-white">AD</AvatarFallback>
-                      </Avatar>
-            <p className="uppercase tracking-widest text-sm text-gray-500">
+
+            <Avatar className="w-32 h-32 mx-auto border-4 border-orange-500/60 shadow-lg shadow-orange-900/40 overflow-hidden rounded-full mb-6">
+              <AvatarImage
+                src="/antpp.JPG"
+                alt="Anthony"
+                className="w-full h-full object-cover object-[center_30%]"
+              />
+              <AvatarFallback className="text-2xl bg-purple-900 text-orange-300">AD</AvatarFallback>
+            </Avatar>
+
+            <p className="uppercase tracking-widest text-sm text-purple-300/80">
               {event.subtitle}
             </p>
 
-            <p className="text-lg text-gray-700 mt-8 max-w-2xl mx-auto leading-relaxed">
+            {/* Date / Time / Location */}
+            <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm">
+              <span className="flex items-center gap-1.5 text-orange-300/90">
+                <Calendar className="w-4 h-4" /> {event.dateText}
+              </span>
+              <span className="text-white/20">·</span>
+              <span className="flex items-center gap-1.5 text-orange-300/90">
+                <Clock className="w-4 h-4" /> {event.timeText}
+              </span>
+              <span className="text-white/20">·</span>
+              <span className="flex items-center gap-1.5 text-orange-300/90">
+                <MapPin className="w-4 h-4" /> {event.locationName}
+              </span>
+            </div>
+
+            <p className="text-base text-white/70 mt-8 max-w-2xl mx-auto leading-relaxed">
               {event.note}
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
               <a href={event.rsvpUrl} target="_blank" rel="noopener noreferrer">
-                <Button className="uppercase bg-black text-white hover:bg-neutral-800 px-8 py-3 tracking-wider rounded-none">
+                <Button className="uppercase bg-orange-500 hover:bg-orange-400 text-black font-bold px-8 py-3 tracking-wider rounded-none shadow-lg shadow-orange-900/30">
                   RSVP Now
                 </Button>
               </a>
-
               <Link href="/">
                 <Button
                   variant="outline"
-                  className="uppercase border-black text-black hover:bg-black hover:text-white px-8 py-3 tracking-wider rounded-none"
+                  className="uppercase border-purple-400/50 text-purple-200 hover:bg-purple-900/40 hover:border-purple-300 px-8 py-3 tracking-wider rounded-none"
                 >
                   Back to Site
                 </Button>
               </Link>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-2 justify-center">
-              <Badge variant="secondary" className="rounded-none">
-                {event.dressCode}
-              </Badge>
-              <Badge variant="secondary" className="rounded-none">
-                Limited space
-              </Badge>
-              <Badge variant="secondary" className="rounded-none">
-                Invite-only
-              </Badge>
+            <div className="mt-4 flex flex-wrap gap-2 justify-center">
+              <Badge className="rounded-none text-md text-purple-200">{event.dressCode}</Badge>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-2 justify-center">
-                *Parking is very limited, if you are trying to drink a lot with me then I reccommend ubering. If no parking, then park near Da Vien and walk over.
+            <div className="mt-6 text-sm text-white/50 max-w-md mx-auto">
+              *Parking is very limited. If you plan on drinking, I recommend Ubering. If no parking, park near Da Vien and walk over.
             </div>
           </div>
         </section>
 
-        {/* EVENT DETAILS */}
-        <section className="py-12 bg-neutral-50">
-          <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="border border-gray-200 rounded-none">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 mt-1" />
-                  <div>
-                    <p className="font-semibold">Date</p>
-                    <p className="text-gray-600">{event.dateText}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        {/* DIVIDER */}
+        <div className="flex items-center justify-center gap-4 px-8">
+          <div className="h-px flex-1 max-w-xs bg-orange-500/20" />
+          <span className="text-orange-400/50 text-lg">🎃</span>
+          <div className="h-px flex-1 max-w-xs bg-orange-500/20" />
+        </div>
 
-            <Card className="border border-gray-200 rounded-none">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-3">
-                  <Clock className="w-5 h-5 mt-1" />
-                  <div>
-                    <p className="font-semibold">Time</p>
-                    <p className="text-gray-600">{event.timeText}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        {/* NIGHT FLOW */}
+        <section className="py-16">
+          <div className="max-w-3xl mx-auto px-4">
+            <h2 className="text-3xl font-serif mb-4 text-orange-300">Night Flow</h2>
 
-            <Card className="border border-gray-200 rounded-none">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 mt-1" />
-                  <div>
-                    <p className="font-semibold">Location</p>
-                    <p className="text-gray-600">{event.locationName}</p>
-                    <p className="text-gray-500 text-sm">{event.addressLine}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+            <div className="mb-4 flex flex-wrap gap-4 text-sm text-purple-300/80">
+              <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /> {event.dateText}</span>
+              <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {event.timeText}</span>
+              <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {event.locationName} · {event.addressLine}</span>
+            </div>
 
-          <div className="max-w-6xl mx-auto px-4 mt-6">
-            <Card className="border border-gray-200 rounded-none">
-              <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <Users className="w-5 h-5 mt-1" />
-                  <div>
-                    <p className="font-semibold">RSVP</p>
-                    <p className="text-gray-600">
-                      Please RSVP so I can plan food + parking.
+            <div className="bg-black/30 backdrop-blur-sm p-6">
+              <div className="space-y-4">
+                {agenda.map((item) => (
+                  <div
+                    key={item.time}
+                    className="flex items-start justify-between gap-6 border-b border-orange-500/10 pb-3 last:border-b-0 last:pb-0"
+                  >
+                    <p className="uppercase tracking-widest text-xs text-orange-400/70 whitespace-nowrap">
+                      {item.time}
+                    </p>
+                    <p className="text-white/80 font-medium text-right">
+                      {item.label}
                     </p>
                   </div>
-                </div>
-
-                <a href={event.rsvpUrl} target="_blank" rel="noopener noreferrer">
-                  <Button className="uppercase bg-black text-white hover:bg-neutral-800 px-6 py-2 tracking-wider rounded-none flex items-center gap-2">
-                    RSVP Link <ExternalLink className="w-4 h-4" />
-                  </Button>
-                </a>
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+              <p className="text-sm text-white/40 mt-6">
+                *Vibes only. This is a relaxed hang — come through whenever, stay as long as you want.
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* AGENDA + MENU */}
-        <section className="py-16 bg-white">
-          <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* AGENDA */}
-            <div>
-              <h2 className="text-3xl font-serif mb-6">Night Flow</h2>
-              <Card className="border border-gray-200 rounded-none">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {agenda.map((item) => (
-                      <div
-                        key={item.time}
-                        className="flex items-start justify-between gap-6 border-b border-gray-200 pb-3 last:border-b-0 last:pb-0"
-                      >
-                        <p className="uppercase tracking-widest text-xs text-gray-500 whitespace-nowrap">
-                          {item.time}
+        {/* DIVIDER */}
+        <div className="flex items-center justify-center gap-4 px-8">
+          <div className="h-px flex-1 max-w-xs bg-orange-500/20" />
+          <span className="text-orange-400/50 text-lg">🎃</span>
+          <div className="h-px flex-1 max-w-xs bg-orange-500/20" />
+        </div>
+
+        {/* FOOD MENU */}
+        <section className="py-16">
+          <div className="max-w-xl mx-auto px-4 text-center">
+
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <UtensilsCrossed className="w-4 h-4 text-orange-400/60" />
+              <p className="text-white/40 text-xs uppercase tracking-widest">{menu.subheader}</p>
+            </div>
+            <h2 className="text-3xl font-serif text-white mb-12">{menu.header}</h2>
+
+            <div className="space-y-10">
+              {menu.sections.map((section, i) => (
+                <div key={section.title}>
+                  {/* Section label */}
+                  <p className="uppercase tracking-[0.25em] text-orange-400 text-xs mb-6">
+                    {section.title}
+                  </p>
+
+                  {/* Items */}
+                  <div className="space-y-6">
+                    {section.items.map((item) => (
+                      <div key={item.name}>
+                        <p className="uppercase tracking-wide font-semibold text-white text-sm">
+                          {item.name}
                         </p>
-                        <p className="text-gray-700 font-medium text-right">
-                          {item.label}
-                        </p>
+                        {item.description && (
+                          <p className="italic text-white/50 text-sm mt-1">
+                            {item.description}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
 
-                  <p className="text-sm text-gray-500 mt-6">
-                    *Vibes only. This is a relaxed hang — come through whenever,
-                    stay as long as you want.
-                  </p>
-                </CardContent>
-              </Card>
+                  {i < menu.sections.length - 1 && (
+                    <div className="mt-4 flex items-center justify-center gap-3">
+                      <div className="h-px w-16 bg-orange-500/15" />
+                      <div className="h-px w-16 bg-orange-500/15" />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
 
-            {/* MENU */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <UtensilsCrossed className="w-5 h-5" />
-                <h2 className="text-3xl font-serif">{menu.header}</h2>
-              </div>
+            <p className="text-xs text-white/30 mt-10 italic">{menu.footer}</p>
 
-              <div className="space-y-4">
-                {menu.sections.map((section) => (
-                  <Card key={section.title} className="border border-gray-200 rounded-none">
-                    <CardContent className="p-6">
-                      <p className="uppercase tracking-widest text-xs text-gray-500 mb-3">
-                        {section.title}
-                      </p>
-                      <ul className="space-y-2 text-gray-700">
-                        {section.items.map((item) => (
-                          <li key={item} className="flex gap-2">
-                            <span className="text-gray-400">•</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
-
-                <p className="text-sm text-gray-500">{menu.footer}</p>
-
-                <div className="pt-2">
-                  <a href={event.rsvpUrl} target="_blank" rel="noopener noreferrer">
-                    <Button className="uppercase bg-black text-white hover:bg-neutral-800 px-8 py-3 tracking-wider rounded-none w-full">
-                      RSVP — Save Your Spot
-                    </Button>
-                  </a>
-                </div>
-              </div>
+            <div className="mt-8">
+              <a href={event.rsvpUrl} target="_blank" rel="noopener noreferrer">
+                <Button className="uppercase bg-orange-500 hover:bg-orange-400 text-black font-bold px-8 py-3 tracking-wider rounded-none w-full shadow-md shadow-orange-900/30">
+                  RSVP — Save Your Spot
+                </Button>
+              </a>
             </div>
           </div>
         </section>
 
         {/* FOOTER */}
-        <footer className="py-10 bg-neutral-50">
+        <footer className="py-10 border-t border-orange-500/10">
           <div className="max-w-6xl mx-auto px-4 text-center">
-            <p className="text-sm text-gray-600">
-              Hosted by Anthony • Cloud House Apartments • {event.dateText} at {event.timeText}
+            <p className="text-sm text-white/40">
+              Hosted by Anthony · Cloud House Apartments · {event.dateText} at {event.timeText}
             </p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-white/25 mt-2">
               Address details can be shared after RSVP if needed.
             </p>
           </div>
         </footer>
+
       </main>
     </>
   )
