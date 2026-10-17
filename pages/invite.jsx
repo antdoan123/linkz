@@ -14,7 +14,7 @@ export default function InvitePage() {
     locationName: "Stanton, CA",
     addressLine: "Cloud House Apartment",
     rsvpUrl: "https://forms.gle/CatufaErhUBJestW7",
-    dressCode: "Halloween Costume Encouraged",
+    dressCode: "Halloween Costume Required",
     note:
       "A spooky night filled with witch potions, spooky games, and deadly vibes",
   }
@@ -53,7 +53,7 @@ export default function InvitePage() {
   const agenda = [
     { time: "6:00 PM", label: "Arrive + drinks + meet people" },
     { time: "6:45 PM", label: "Food opens" },
-    { time: "7:30 PM", label: "Group photo + quick toast" },
+    { time: "7:30 PM", label: "Group photo + Costume contest" },
     { time: "8:00 PM", label: "Chill, drink, vibe / music" },
   ]
 
